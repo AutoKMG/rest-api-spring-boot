@@ -19,7 +19,11 @@ public class UserResource {
     }
     @GetMapping("/users/{userIndex}")
     public User retrieveUser(@PathVariable int userIndex){
-        return service.findOne(userIndex);
+        User user = service.findOne(userIndex);
+        if (user==null){
+            throw new UserNotFoundException("id:"+userIndex);
+        }
+        return user;
     }
 
     @PostMapping("/users")
