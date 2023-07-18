@@ -1,11 +1,13 @@
 package com.khaledsaleh.restapispringboot.filtering;
 
+import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+@JsonFilter("SomeBeanFilter")
 public class SomeBean {
     private String field1;
-    @JsonIgnore
+    // @JsonIgnore
     private String field2;
     private String field3;
 
