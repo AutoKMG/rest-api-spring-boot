@@ -1,5 +1,6 @@
 package com.khaledsaleh.restapispringboot.user;
 
+import com.khaledsaleh.restapispringboot.jpa.PostRepository;
 import com.khaledsaleh.restapispringboot.jpa.UserRepository;
 import jakarta.validation.Valid;
 import org.springframework.hateoas.EntityModel;
@@ -18,8 +19,10 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RestController
 public class UserJpaResource {
     private UserRepository repository;
-    public UserJpaResource(UserRepository repository){
+    private PostRepository postRepository;
+    public UserJpaResource(UserRepository repository, PostRepository postRepository){
         this.repository = repository;
+        this.postRepository = postRepository;
     }
     @GetMapping("/jpa/users")
     public List<User> retrieveAllUsers(){
@@ -49,5 +52,39 @@ public class UserJpaResource {
     @DeleteMapping("/jpa/users/{userIndex}")
     public void deleteUser(@PathVariable int userIndex){
         repository.deleteById(userIndex);
+    }
+    @GetMapping("/jpa/users/{userIndex}/posts")
+    public List<Post> retrievePostsForUser(@PathVariable int userIndex){
+        Optional<User> user = repository.findById(userIndex);
+        if (user.isEmpty()){
+            throw new UserNotFoundException("id:"+userIndex);
+        }
+        return user.get().getPosts();
+    }
+    @GetMapping("/jpa/users/{userIndex}/posts/{postIndex}")
+    public Post retrievePostById(@PathVariable int userIndex, @PathVariable int postIndex){
+        Optional<User> user = repository.findById(userIndex);
+        if (user.isEmpty()){
+            throw new UserNotFoundException("id:"+userIndex);
+        }
+        Optional<Post> post = postRepository.findById(postIndex);
+        if (post.isEmpty()){
+            throw new IllegalArgumentException();
+        }
+        return post.get();
+    }
+    @PostMapping("/jpa/users/{userIndex}/posts")
+    public ResponseEntity<Post> createPostForUser(@PathVariable int userIndex, @Valid @RequestBody Post post){
+        Optional<User> user = repository.findById(userIndex);
+        if (user.isEmpty()){
+            throw new UserNotFoundException("id:"+userIndex);
+        }
+        post.setUser(user.get());
+        Post savedPost = postRepository.save(post);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(savedPost.getId())
+                .toUri();
+        return ResponseEntity.created(location).build();
     }
 }

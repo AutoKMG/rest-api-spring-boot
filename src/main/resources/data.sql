@@ -4,3 +4,4 @@ INSERT INTO user_details (id, birth_date, name) VALUES (10003, '2008-09-06', 'Na
 
 INSERT INTO post(id, description, user_id) VALUES (20001, 'I Love Khaled', '10002');
 INSERT INTO post(id, description, user_id) VALUES (20002, 'I Love Shahd', '10001');
+INSERT INTO post(id, description, user_id) VALUES (20003, 'I Love Shahoda', '10001');
