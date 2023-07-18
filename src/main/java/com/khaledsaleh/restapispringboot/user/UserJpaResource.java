@@ -17,10 +17,8 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 public class UserJpaResource {
-    private UserDaoService service;
     private UserRepository repository;
-    public UserJpaResource(UserDaoService service, UserRepository repository){
-        this.service = service;
+    public UserJpaResource(UserRepository repository){
         this.repository = repository;
     }
     @GetMapping("/jpa/users")
