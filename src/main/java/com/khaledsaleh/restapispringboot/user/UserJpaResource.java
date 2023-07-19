@@ -18,19 +18,19 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 public class UserJpaResource {
-    private UserRepository repository;
+    private UserRepository userRepository;
     private PostRepository postRepository;
-    public UserJpaResource(UserRepository repository, PostRepository postRepository){
-        this.repository = repository;
+    public UserJpaResource(UserRepository userRepository, PostRepository postRepository){
+        this.userRepository = userRepository;
         this.postRepository = postRepository;
     }
     @GetMapping("/jpa/users")
     public List<User> retrieveAllUsers(){
-        return repository.findAll();
+        return userRepository.findAll();
     }
     @GetMapping("/jpa/users/{userIndex}")
     public EntityModel<User> retrieveUser(@PathVariable int userIndex){
-        Optional<User> user = repository.findById(userIndex);
+        Optional<User> user = userRepository.findById(userIndex);
         if (user.isEmpty()){
             throw new UserNotFoundException("id:"+userIndex);
         }
@@ -42,7 +42,7 @@ public class UserJpaResource {
 
     @PostMapping("/jpa/users")
     public ResponseEntity<User> createUser(@Valid @RequestBody User user){
-        User savedUser = repository.save(user);
+        User savedUser = userRepository.save(user);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
                 .buildAndExpand(savedUser.getId())
@@ -51,11 +51,11 @@ public class UserJpaResource {
     }
     @DeleteMapping("/jpa/users/{userIndex}")
     public void deleteUser(@PathVariable int userIndex){
-        repository.deleteById(userIndex);
+        userRepository.deleteById(userIndex);
     }
     @GetMapping("/jpa/users/{userIndex}/posts")
     public List<Post> retrievePostsForUser(@PathVariable int userIndex){
-        Optional<User> user = repository.findById(userIndex);
+        Optional<User> user = userRepository.findById(userIndex);
         if (user.isEmpty()){
             throw new UserNotFoundException("id:"+userIndex);
         }
@@ -63,7 +63,7 @@ public class UserJpaResource {
     }
     @GetMapping("/jpa/users/{userIndex}/posts/{postIndex}")
     public Post retrievePostById(@PathVariable int userIndex, @PathVariable int postIndex){
-        Optional<User> user = repository.findById(userIndex);
+        Optional<User> user = userRepository.findById(userIndex);
         if (user.isEmpty()){
             throw new UserNotFoundException("id:"+userIndex);
         }
@@ -75,7 +75,7 @@ public class UserJpaResource {
     }
     @PostMapping("/jpa/users/{userIndex}/posts")
     public ResponseEntity<Post> createPostForUser(@PathVariable int userIndex, @Valid @RequestBody Post post){
-        Optional<User> user = repository.findById(userIndex);
+        Optional<User> user = userRepository.findById(userIndex);
         if (user.isEmpty()){
             throw new UserNotFoundException("id:"+userIndex);
         }
